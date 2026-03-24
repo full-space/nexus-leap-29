@@ -1,55 +1,35 @@
 import { useRef, useEffect } from "react";
 
-// Simplified world map outline as path segments (normalized 0-1 coordinates)
-const WORLD_PATHS: [number, number][][] = [
-  // North America
-  [[0.05,0.25],[0.08,0.20],[0.12,0.18],[0.18,0.17],[0.22,0.19],[0.24,0.22],[0.22,0.28],[0.20,0.32],[0.18,0.38],[0.15,0.42],[0.12,0.45],[0.10,0.48],[0.08,0.44],[0.06,0.38],[0.05,0.32]],
-  // South America
-  [[0.18,0.52],[0.20,0.50],[0.22,0.52],[0.24,0.56],[0.25,0.62],[0.24,0.68],[0.22,0.74],[0.20,0.78],[0.19,0.82],[0.18,0.76],[0.17,0.70],[0.16,0.64],[0.17,0.58]],
-  // Europe
-  [[0.42,0.18],[0.44,0.16],[0.47,0.15],[0.50,0.17],[0.52,0.20],[0.50,0.24],[0.48,0.26],[0.46,0.28],[0.44,0.26],[0.42,0.22]],
-  // Africa
-  [[0.44,0.32],[0.46,0.30],[0.50,0.32],[0.52,0.38],[0.54,0.44],[0.53,0.52],[0.52,0.58],[0.50,0.64],[0.48,0.68],[0.46,0.64],[0.44,0.58],[0.43,0.50],[0.42,0.44],[0.43,0.38]],
-  // Asia
-  [[0.55,0.15],[0.60,0.13],[0.65,0.14],[0.70,0.16],[0.75,0.18],[0.80,0.20],[0.82,0.24],[0.80,0.28],[0.78,0.32],[0.75,0.34],[0.72,0.36],[0.68,0.38],[0.65,0.36],[0.62,0.32],[0.58,0.28],[0.55,0.24],[0.54,0.20]],
-  // Southeast Asia / Indonesia
-  [[0.72,0.42],[0.75,0.44],[0.78,0.46],[0.80,0.48],[0.82,0.50],[0.84,0.48],[0.86,0.46]],
-  // Australia
-  [[0.80,0.58],[0.82,0.56],[0.86,0.55],[0.90,0.57],[0.92,0.60],[0.90,0.64],[0.88,0.68],[0.85,0.70],[0.82,0.68],[0.80,0.64]],
-];
-
-// Datacenter locations (normalized 0-1)
-interface DC { x: number; y: number; label: string; size: number }
+// Datacenter positions (normalized 0-1) spread across canvas like a global network
+interface DC { x: number; y: number; size: number; label: string }
 const DATACENTERS: DC[] = [
-  { x: 0.12, y: 0.28, label: "IAD", size: 5 },   // Virginia
-  { x: 0.08, y: 0.22, label: "SEA", size: 3.5 },  // Seattle
-  { x: 0.18, y: 0.20, label: "YYZ", size: 3.5 },  // Toronto
-  { x: 0.22, y: 0.58, label: "GRU", size: 5 },    // São Paulo
-  { x: 0.18, y: 0.50, label: "BOG", size: 3 },    // Bogotá
-  { x: 0.46, y: 0.22, label: "FRA", size: 5 },    // Frankfurt
-  { x: 0.44, y: 0.18, label: "LHR", size: 4 },    // London
-  { x: 0.50, y: 0.20, label: "CDG", size: 3.5 },  // Paris
-  { x: 0.48, y: 0.40, label: "JNB", size: 3.5 },  // Johannesburg
-  { x: 0.60, y: 0.24, label: "BOM", size: 4 },    // Mumbai
-  { x: 0.68, y: 0.22, label: "SIN", size: 5 },    // Singapore
-  { x: 0.75, y: 0.20, label: "HKG", size: 4 },    // Hong Kong
-  { x: 0.80, y: 0.18, label: "NRT", size: 5 },    // Tokyo
-  { x: 0.86, y: 0.60, label: "SYD", size: 4 },    // Sydney
-  { x: 0.15, y: 0.35, label: "MIA", size: 3 },    // Miami
-  { x: 0.06, y: 0.30, label: "LAX", size: 4 },    // Los Angeles
+  { x: 0.08, y: 0.30, label: "LAX", size: 4 },
+  { x: 0.14, y: 0.22, label: "SEA", size: 3 },
+  { x: 0.18, y: 0.35, label: "IAD", size: 5 },
+  { x: 0.22, y: 0.18, label: "YYZ", size: 3.5 },
+  { x: 0.15, y: 0.50, label: "MIA", size: 3 },
+  { x: 0.25, y: 0.65, label: "GRU", size: 5 },
+  { x: 0.42, y: 0.25, label: "LHR", size: 4 },
+  { x: 0.47, y: 0.22, label: "FRA", size: 5 },
+  { x: 0.50, y: 0.30, label: "CDG", size: 3.5 },
+  { x: 0.46, y: 0.55, label: "JNB", size: 3.5 },
+  { x: 0.55, y: 0.18, label: "WAW", size: 3 },
+  { x: 0.62, y: 0.32, label: "BOM", size: 4 },
+  { x: 0.70, y: 0.28, label: "SIN", size: 5 },
+  { x: 0.78, y: 0.22, label: "HKG", size: 4 },
+  { x: 0.85, y: 0.18, label: "NRT", size: 5 },
+  { x: 0.88, y: 0.55, label: "SYD", size: 4 },
+  { x: 0.35, y: 0.15, label: "ICN", size: 3 },
+  { x: 0.58, y: 0.45, label: "DXB", size: 3.5 },
 ];
 
-// Connections between datacenters (index pairs)
+// Connections
 const CONNECTIONS: [number, number][] = [
-  [0,1],[0,2],[0,3],[0,6],[0,5],[0,15],[0,14],
-  [1,15],[2,6],[3,4],[3,14],
-  [5,6],[5,7],[5,9],[6,7],
-  [7,8],[8,9],
-  [9,10],[10,11],[10,13],
-  [11,12],[12,13],
-  [5,12],[6,9],[3,8],
-  [14,3],[14,4],[15,1],
-  [10,12],[9,11],
+  [0,1],[0,2],[0,4],[1,3],[2,3],[2,4],[2,6],[4,5],
+  [5,9],[6,7],[6,8],[7,8],[7,10],[8,9],[9,17],
+  [10,7],[11,12],[11,17],[12,13],[13,14],[14,15],
+  [12,15],[0,14],[2,7],[5,6],[6,11],[3,16],[16,7],
+  [13,12],[17,9],[17,12],
 ];
 
 interface Beam {
@@ -57,7 +37,12 @@ interface Beam {
   progress: number;
   speed: number;
   forward: boolean;
+  hue: number;
 }
+
+// Quadratic bezier helper
+const qBez = (a: number, cp: number, b: number, t: number) =>
+  (1 - t) * (1 - t) * a + 2 * (1 - t) * t * cp + t * t * b;
 
 const HeroBackground = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -69,7 +54,6 @@ const HeroBackground = () => {
     if (!ctx) return;
 
     let animId: number;
-
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -77,23 +61,19 @@ const HeroBackground = () => {
     resize();
     window.addEventListener("resize", resize);
 
-    // Beams
     const beams: Beam[] = [];
     let frame = 0;
+    const pulses = DATACENTERS.map(() => Math.random() * Math.PI * 2);
 
-    const spawnBeam = () => {
-      if (beams.length > 12) return;
-      const connIdx = Math.floor(Math.random() * CONNECTIONS.length);
-      beams.push({
-        connIdx,
-        progress: 0,
-        speed: 0.003 + Math.random() * 0.005,
-        forward: Math.random() > 0.5,
-      });
-    };
-
-    // Pulse state for DCs
-    const dcPulse = DATACENTERS.map(() => Math.random() * Math.PI * 2);
+    // Scattered subtle particles
+    const particles = Array.from({ length: 80 }, () => ({
+      x: Math.random(),
+      y: Math.random(),
+      vx: (Math.random() - 0.5) * 0.0002,
+      vy: (Math.random() - 0.5) * 0.0002,
+      r: 0.5 + Math.random() * 1,
+      phase: Math.random() * Math.PI * 2,
+    }));
 
     const draw = () => {
       const W = canvas.width;
@@ -101,137 +81,134 @@ const HeroBackground = () => {
       ctx.clearRect(0, 0, W, H);
       frame++;
 
-      // Spawn beams periodically
-      if (frame % 25 === 0) spawnBeam();
+      // Spawn beams
+      if (frame % 18 === 0 && beams.length < 15) {
+        beams.push({
+          connIdx: Math.floor(Math.random() * CONNECTIONS.length),
+          progress: 0,
+          speed: 0.002 + Math.random() * 0.004,
+          forward: Math.random() > 0.5,
+          hue: 200 + Math.random() * 30,
+        });
+      }
 
-      // --- Draw world map outlines ---
-      ctx.save();
-      for (const path of WORLD_PATHS) {
+      // --- Ambient particles ---
+      for (const p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.phase += 0.01;
+        if (p.x < 0 || p.x > 1) p.vx *= -1;
+        if (p.y < 0 || p.y > 1) p.vy *= -1;
+        const alpha = 0.12 + 0.08 * Math.sin(p.phase);
         ctx.beginPath();
-        for (let i = 0; i < path.length; i++) {
-          const px = path[i][0] * W;
-          const py = path[i][1] * H;
-          if (i === 0) ctx.moveTo(px, py);
-          else ctx.lineTo(px, py);
-        }
-        ctx.closePath();
-        ctx.strokeStyle = "rgba(60,100,180,0.08)";
-        ctx.lineWidth = 1;
-        ctx.stroke();
-        ctx.fillStyle = "rgba(40,70,140,0.03)";
+        ctx.arc(p.x * W, p.y * H, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(100,160,220,${alpha})`;
         ctx.fill();
       }
-      ctx.restore();
 
-      // --- Draw connections (thin lines) ---
+      // --- Draw connections ---
       for (let ci = 0; ci < CONNECTIONS.length; ci++) {
-        const [a, b] = CONNECTIONS[ci];
-        const ax = DATACENTERS[a].x * W, ay = DATACENTERS[a].y * H;
-        const bx = DATACENTERS[b].x * W, by = DATACENTERS[b].y * H;
-
-        // Curved line (quadratic bezier)
-        const mx = (ax + bx) / 2;
-        const my = (ay + by) / 2 - Math.abs(bx - ax) * 0.08;
+        const [aI, bI] = CONNECTIONS[ci];
+        const a = DATACENTERS[aI], b = DATACENTERS[bI];
+        const ax = a.x * W, ay = a.y * H;
+        const bx = b.x * W, by = b.y * H;
+        const cpx = (ax + bx) / 2;
+        const cpy = (ay + by) / 2 - Math.abs(bx - ax) * 0.12;
 
         ctx.beginPath();
         ctx.moveTo(ax, ay);
-        ctx.quadraticCurveTo(mx, my, bx, by);
-        ctx.strokeStyle = "rgba(60,120,200,0.06)";
-        ctx.lineWidth = 0.6;
+        ctx.quadraticCurveTo(cpx, cpy, bx, by);
+        ctx.strokeStyle = "rgba(50,100,170,0.07)";
+        ctx.lineWidth = 0.5;
         ctx.stroke();
       }
 
-      // --- Draw beams (light pulses along connections) ---
+      // --- Draw beams ---
       for (let i = beams.length - 1; i >= 0; i--) {
         const beam = beams[i];
         beam.progress += beam.speed;
         if (beam.progress >= 1) { beams.splice(i, 1); continue; }
 
-        const [aIdx, bIdx] = CONNECTIONS[beam.connIdx];
-        const fromDC = beam.forward ? DATACENTERS[aIdx] : DATACENTERS[bIdx];
-        const toDC = beam.forward ? DATACENTERS[bIdx] : DATACENTERS[aIdx];
+        const [aI, bI] = CONNECTIONS[beam.connIdx];
+        const from = beam.forward ? DATACENTERS[aI] : DATACENTERS[bI];
+        const to = beam.forward ? DATACENTERS[bI] : DATACENTERS[aI];
 
-        const ax = fromDC.x * W, ay = fromDC.y * H;
-        const bx = toDC.x * W, by = toDC.y * H;
-        const mx = (ax + bx) / 2;
-        const my = (ay + by) / 2 - Math.abs(bx - ax) * 0.08;
+        const ax = from.x * W, ay = from.y * H;
+        const bx = to.x * W, by = to.y * H;
+        const cpx = (ax + bx) / 2;
+        const cpy = (ay + by) / 2 - Math.abs(bx - ax) * 0.12;
 
-        // Quadratic bezier point at t
         const t = beam.progress;
-        const px = (1-t)*(1-t)*ax + 2*(1-t)*t*mx + t*t*bx;
-        const py = (1-t)*(1-t)*ay + 2*(1-t)*t*my + t*t*by;
+        const px = qBez(ax, cpx, bx, t);
+        const py = qBez(ay, cpy, by, t);
 
-        // Trail
-        const trailLen = 0.12;
-        const t2 = Math.max(0, t - trailLen);
-        const tx = (1-t2)*(1-t2)*ax + 2*(1-t2)*t2*mx + t2*t2*bx;
-        const ty = (1-t2)*(1-t2)*ay + 2*(1-t2)*t2*my + t2*t2*by;
-
-        // Draw trail segment
-        const grad = ctx.createLinearGradient(tx, ty, px, py);
-        grad.addColorStop(0, "rgba(60,140,255,0)");
-        grad.addColorStop(0.5, "rgba(80,160,255,0.15)");
-        grad.addColorStop(1, "rgba(100,180,255,0.4)");
-
+        // Trail (multiple points for smooth curve segment)
+        const trailSteps = 6;
+        const trailLen = 0.10;
         ctx.beginPath();
-        // Approximate trail with line for simplicity
-        ctx.moveTo(tx, ty);
-        ctx.lineTo(px, py);
+        for (let s = 0; s <= trailSteps; s++) {
+          const st = Math.max(0, t - trailLen + (trailLen / trailSteps) * s);
+          const sx = qBez(ax, cpx, bx, st);
+          const sy = qBez(ay, cpy, by, st);
+          if (s === 0) ctx.moveTo(sx, sy);
+          else ctx.lineTo(sx, sy);
+        }
+        const grad = ctx.createLinearGradient(
+          qBez(ax, cpx, bx, Math.max(0, t - trailLen)),
+          qBez(ay, cpy, by, Math.max(0, t - trailLen)),
+          px, py
+        );
+        grad.addColorStop(0, `hsla(${beam.hue},70%,65%,0)`);
+        grad.addColorStop(1, `hsla(${beam.hue},70%,65%,0.35)`);
         ctx.strokeStyle = grad;
         ctx.lineWidth = 1.5;
         ctx.stroke();
 
-        // Head glow
+        // Head
         ctx.beginPath();
-        ctx.arc(px, py, 3, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(100,180,255,0.6)";
+        ctx.arc(px, py, 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${beam.hue},70%,70%,0.7)`;
         ctx.fill();
 
-        // Outer glow
+        // Soft glow
         ctx.beginPath();
         ctx.arc(px, py, 8, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(80,150,255,0.08)";
+        ctx.fillStyle = `hsla(${beam.hue},60%,60%,0.06)`;
         ctx.fill();
       }
 
       // --- Draw datacenter nodes ---
       for (let i = 0; i < DATACENTERS.length; i++) {
         const dc = DATACENTERS[i];
-        dcPulse[i] += 0.02;
+        pulses[i] += 0.018;
         const px = dc.x * W;
         const py = dc.y * H;
-        const pulse = 0.7 + 0.3 * Math.sin(dcPulse[i]);
-        const sz = dc.size * pulse;
+        const p = 0.7 + 0.3 * Math.sin(pulses[i]);
+        const sz = dc.size * p;
 
         // Outer glow
         ctx.beginPath();
-        ctx.arc(px, py, sz * 4, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(60,130,255,${0.03 * pulse})`;
+        ctx.arc(px, py, sz * 3.5, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(50,120,200,${0.025 * p})`;
         ctx.fill();
 
-        // Mid ring
-        ctx.beginPath();
-        ctx.arc(px, py, sz * 2, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(80,150,255,${0.06 * pulse})`;
-        ctx.fill();
-
-        // Core dot
+        // Core
         ctx.beginPath();
         ctx.arc(px, py, sz, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(100,170,255,${0.5 * pulse})`;
+        ctx.fillStyle = `rgba(80,150,230,${0.45 * p})`;
         ctx.fill();
 
         // Bright center
         ctx.beginPath();
-        ctx.arc(px, py, sz * 0.4, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(160,210,255,${0.8 * pulse})`;
+        ctx.arc(px, py, sz * 0.35, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(150,200,255,${0.7 * p})`;
         ctx.fill();
 
         // Label
-        ctx.fillStyle = `rgba(140,180,220,${0.25 * pulse})`;
-        ctx.font = "9px Inter, sans-serif";
+        ctx.fillStyle = `rgba(120,170,220,${0.2 * p})`;
+        ctx.font = "8px Inter, sans-serif";
         ctx.textAlign = "center";
-        ctx.fillText(dc.label, px, py - sz * 2 - 4);
+        ctx.fillText(dc.label, px, py - sz * 2.5 - 2);
       }
 
       animId = requestAnimationFrame(draw);
