@@ -21,15 +21,17 @@ const HeroSection = () => {
     window.addEventListener("resize", resize);
 
     // Create dots
-    const dots: { x: number; y: number; vx: number; vy: number; r: number; opacity: number }[] = [];
-    for (let i = 0; i < 120; i++) {
+    const dots: { x: number; y: number; vx: number; vy: number; r: number; opacity: number; pulse: number; pulseSpeed: number }[] = [];
+    for (let i = 0; i < 200; i++) {
       dots.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: (Math.random() - 0.5) * 0.3,
-        r: Math.random() * 1.5 + 0.5,
-        opacity: Math.random() * 0.4 + 0.1,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        r: Math.random() * 2.5 + 0.5,
+        opacity: Math.random() * 0.6 + 0.2,
+        pulse: Math.random() * Math.PI * 2,
+        pulseSpeed: Math.random() * 0.02 + 0.005,
       });
     }
 
