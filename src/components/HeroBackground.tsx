@@ -200,6 +200,13 @@ const HeroBackground = () => {
         ctx.fillStyle = `rgba(50,120,200,${0.025 * p})`;
         ctx.fill();
 
+        // Orange border ring
+        ctx.beginPath();
+        ctx.arc(px, py, sz * 1.8, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(255,140,30,${0.25 * p})`;
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+
         // Core
         ctx.beginPath();
         ctx.arc(px, py, sz, 0, Math.PI * 2);
