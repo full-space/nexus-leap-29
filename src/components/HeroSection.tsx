@@ -40,24 +40,35 @@ const HeroSection = () => {
       for (const dot of dots) {
         dot.x += dot.vx;
         dot.y += dot.vy;
+        dot.pulse += dot.pulseSpeed;
         if (dot.x < 0 || dot.x > canvas.width) dot.vx *= -1;
         if (dot.y < 0 || dot.y > canvas.height) dot.vy *= -1;
+        const pulsedOpacity = dot.opacity * (0.6 + 0.4 * Math.sin(dot.pulse));
+        const pulsedR = dot.r * (0.8 + 0.2 * Math.sin(dot.pulse));
+        // Glow
         ctx.beginPath();
-        ctx.arc(dot.x, dot.y, dot.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,255,255,${dot.opacity})`;
+        ctx.arc(dot.x, dot.y, pulsedR * 3, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(140,180,255,${pulsedOpacity * 0.08})`;
+        ctx.fill();
+        // Core
+        ctx.beginPath();
+        ctx.arc(dot.x, dot.y, pulsedR, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(200,220,255,${pulsedOpacity})`;
         ctx.fill();
       }
-      // Draw some connections
+      // Draw connections
       for (let i = 0; i < dots.length; i++) {
         for (let j = i + 1; j < dots.length; j++) {
           const dx = dots[i].x - dots[j].x;
           const dy = dots[i].y - dots[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 120) {
+          if (dist < 150) {
+            const alpha = 0.08 * (1 - dist / 150);
             ctx.beginPath();
             ctx.moveTo(dots[i].x, dots[i].y);
             ctx.lineTo(dots[j].x, dots[j].y);
-            ctx.strokeStyle = `rgba(255,255,255,${0.03 * (1 - dist / 120)})`;
+            ctx.strokeStyle = `rgba(140,180,255,${alpha})`;
+            ctx.lineWidth = 0.5;
             ctx.stroke();
           }
         }
