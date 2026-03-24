@@ -21,6 +21,12 @@ const DATACENTERS: DC[] = [
   { x: 0.88, y: 0.55, label: "SYD", size: 4 },
   { x: 0.35, y: 0.15, label: "ICN", size: 3 },
   { x: 0.58, y: 0.45, label: "DXB", size: 3.5 },
+  // South America - new nodes
+  { x: 0.24, y: 0.62, label: "SPO", size: 4 },    // São Paulo
+  { x: 0.22, y: 0.72, label: "POA", size: 3.5 },   // Rio Grande do Sul
+  { x: 0.23, y: 0.57, label: "UDI", size: 3 },     // Uberlândia - MG
+  { x: 0.18, y: 0.73, label: "SCL", size: 3.5 },   // Chile (Santiago)
+  { x: 0.17, y: 0.55, label: "BOG", size: 3.5 },   // Bogotá
 ];
 
 // Connections
@@ -30,6 +36,8 @@ const CONNECTIONS: [number, number][] = [
   [10,7],[11,12],[11,17],[12,13],[13,14],[14,15],
   [12,15],[0,14],[2,7],[5,6],[6,11],[3,16],[16,7],
   [13,12],[17,9],[17,12],
+  // New SA connections
+  [5,18],[18,19],[18,20],[18,22],[19,21],[22,4],[20,5],[21,19],
 ];
 
 interface Beam {
@@ -191,6 +199,13 @@ const HeroBackground = () => {
         ctx.arc(px, py, sz * 3.5, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(50,120,200,${0.025 * p})`;
         ctx.fill();
+
+        // Orange border ring
+        ctx.beginPath();
+        ctx.arc(px, py, sz * 1.8, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(255,140,30,${0.25 * p})`;
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
 
         // Core
         ctx.beginPath();
