@@ -23,15 +23,25 @@ const HeroSection = () => {
 
     // Datacenter nodes — normalized [0-1] positions (rough world-map projection)
     const datacenters = [
-      { code: "GRU", label: "São Paulo",     nx: 0.33, ny: 0.72 },
-      { code: "JPA", label: "João Pessoa",   nx: 0.38, ny: 0.62 },
-      { code: "LIM", label: "Lima",          nx: 0.24, ny: 0.65 },
-      { code: "IAD", label: "Virginia",      nx: 0.28, ny: 0.38 },
-      { code: "LHR", label: "Londres",       nx: 0.48, ny: 0.28 },
-      { code: "FRA", label: "Frankfurt",     nx: 0.52, ny: 0.30 },
-      { code: "NRT", label: "Tóquio",        nx: 0.85, ny: 0.38 },
-      { code: "SIN", label: "Singapura",     nx: 0.78, ny: 0.60 },
-      { code: "SYD", label: "Sydney",        nx: 0.88, ny: 0.78 },
+      { code: "GRU", label: "São Paulo",       nx: 0.33, ny: 0.72 },
+      { code: "JPA", label: "João Pessoa",     nx: 0.38, ny: 0.62 },
+      { code: "LIM", label: "Lima",            nx: 0.24, ny: 0.65 },
+      { code: "IAD", label: "Virginia",        nx: 0.28, ny: 0.38 },
+      { code: "LHR", label: "Londres",         nx: 0.48, ny: 0.28 },
+      { code: "FRA", label: "Frankfurt",       nx: 0.52, ny: 0.30 },
+      { code: "NRT", label: "Tóquio",          nx: 0.85, ny: 0.38 },
+      { code: "SIN", label: "Singapura",       nx: 0.78, ny: 0.60 },
+      { code: "SYD", label: "Sydney",          nx: 0.88, ny: 0.78 },
+      { code: "POA", label: "Porto Alegre",    nx: 0.34, ny: 0.78 },
+      { code: "BSB", label: "Brasília",        nx: 0.36, ny: 0.68 },
+      { code: "EZE", label: "Buenos Aires",    nx: 0.30, ny: 0.82 },
+      { code: "UDI", label: "Uberlândia",      nx: 0.35, ny: 0.70 },
+      { code: "SCL", label: "Santiago",        nx: 0.26, ny: 0.80 },
+      { code: "BOG", label: "Bogotá",          nx: 0.24, ny: 0.56 },
+      { code: "MEX", label: "Cd. México",      nx: 0.18, ny: 0.48 },
+      { code: "DFW", label: "Texas",           nx: 0.22, ny: 0.42 },
+      { code: "MIA", label: "Miami",           nx: 0.26, ny: 0.46 },
+      { code: "YYZ", label: "Canadá",          nx: 0.26, ny: 0.32 },
     ];
 
     // Connections between DCs
@@ -39,6 +49,13 @@ const HeroSection = () => {
       [0, 1], [0, 2], [0, 3], [1, 3], [2, 3],
       [3, 4], [4, 5], [5, 6], [5, 7], [6, 7], [7, 8],
       [0, 4], [3, 6],
+      // New SA connections
+      [0, 9], [0, 10], [0, 11], [9, 12], [12, 11],
+      [0, 13], [10, 1],
+      // LATAM north
+      [2, 14], [14, 15], [15, 16], [16, 17], [17, 3],
+      // North America
+      [17, 18], [18, 4], [16, 3],
     ];
 
     // Light beams traveling along routes
