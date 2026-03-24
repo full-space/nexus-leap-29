@@ -116,6 +116,24 @@ const HeroBackground = () => {
         });
       }
 
+      // --- Draw continent outlines ---
+      for (const continent of CONTINENTS) {
+        ctx.beginPath();
+        for (let j = 0; j < continent.length; j++) {
+          const cx = continent[j][0] * W;
+          const cy = continent[j][1] * H;
+          if (j === 0) ctx.moveTo(cx, cy);
+          else ctx.lineTo(cx, cy);
+        }
+        ctx.closePath();
+        ctx.strokeStyle = "rgba(255,140,30,0.08)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        // Subtle fill
+        ctx.fillStyle = "rgba(255,140,30,0.015)";
+        ctx.fill();
+      }
+
       // --- Ambient particles ---
       for (const p of particles) {
         p.x += p.vx;
