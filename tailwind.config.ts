@@ -17,6 +17,7 @@ export default {
         sans: ['"Inter"', 'sans-serif'],
         display: ['"Inter"', 'sans-serif'],
         "serif-display": ['"Playfair Display"', 'serif'],
+        exo: ['"Exo 2"', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
