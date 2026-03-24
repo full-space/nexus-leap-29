@@ -1,20 +1,85 @@
+import { useRef, useEffect } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import HeroBackground from "@/components/HeroBackground";
 
 const HeroSection = () => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let animId: number;
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    // Create dots
+    const dots: { x: number; y: number; vx: number; vy: number; r: number; opacity: number }[] = [];
+    for (let i = 0; i < 120; i++) {
+      dots.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        r: Math.random() * 1.5 + 0.5,
+        opacity: Math.random() * 0.4 + 0.1,
+      });
+    }
+
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (const dot of dots) {
+        dot.x += dot.vx;
+        dot.y += dot.vy;
+        if (dot.x < 0 || dot.x > canvas.width) dot.vx *= -1;
+        if (dot.y < 0 || dot.y > canvas.height) dot.vy *= -1;
+        ctx.beginPath();
+        ctx.arc(dot.x, dot.y, dot.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${dot.opacity})`;
+        ctx.fill();
+      }
+      // Draw some connections
+      for (let i = 0; i < dots.length; i++) {
+        for (let j = i + 1; j < dots.length; j++) {
+          const dx = dots[i].x - dots[j].x;
+          const dy = dots[i].y - dots[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
+            ctx.beginPath();
+            ctx.moveTo(dots[i].x, dots[i].y);
+            ctx.lineTo(dots[j].x, dots[j].y);
+            ctx.strokeStyle = `rgba(255,255,255,${0.03 * (1 - dist / 120)})`;
+            ctx.stroke();
+          }
+        }
+      }
+      animId = requestAnimationFrame(draw);
+    };
+    draw();
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      <HeroBackground />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(30,60,140,0.08)_0%,rgba(20,40,100,0.04)_35%,transparent_70%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_75%,rgba(50,30,120,0.05)_0%,transparent_50%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_25%,rgba(30,100,180,0.04)_0%,transparent_45%)]" />
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full opacity-40" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.03)_0%,transparent_70%)]" />
 
       <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
         {/* Title */}
         <div className="mb-8">
           <div className="flex items-center justify-center gap-4 md:gap-6 mb-2">
-            <span className="text-[clamp(2.5rem,8vw,7rem)] font-exo font-bold tracking-tight leading-none">
+            <span className="text-[clamp(2.5rem,8vw,7rem)] font-display font-bold tracking-tight leading-none">
               CLOUD
             </span>
             <span className="text-[clamp(2.5rem,8vw,7rem)] font-serif-display italic tracking-tight leading-none text-muted-foreground">
@@ -25,7 +90,7 @@ const HeroSection = () => {
             <span className="text-[clamp(2.5rem,8vw,7rem)] font-serif-display italic tracking-tight leading-none text-muted-foreground">
               for
             </span>
-            <span className="text-[clamp(2.5rem,8vw,7rem)] font-exo font-bold tracking-tight leading-none whitespace-nowrap">
+            <span className="text-[clamp(2.5rem,8vw,7rem)] font-display font-bold tracking-tight leading-none">
               MODERN TEAMS
             </span>
           </div>
