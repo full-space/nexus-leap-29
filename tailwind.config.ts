@@ -14,7 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['"Exo 2"', 'sans-serif'],
+        sans: ['"Inter"', 'sans-serif'],
+        display: ['"Space Grotesk"', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -78,11 +79,11 @@ export default {
         },
         "float": {
           "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-10px)" },
+          "50%": { transform: "translateY(-8px)" },
         },
         "pulse-glow": {
-          "0%, 100%": { opacity: "0.4" },
-          "50%": { opacity: "0.8" },
+          "0%, 100%": { opacity: "0.3" },
+          "50%": { opacity: "0.7" },
         },
       },
       animation: {
