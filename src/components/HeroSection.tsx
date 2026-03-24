@@ -21,15 +21,17 @@ const HeroSection = () => {
     window.addEventListener("resize", resize);
 
     // Create dots
-    const dots: { x: number; y: number; vx: number; vy: number; r: number; opacity: number }[] = [];
-    for (let i = 0; i < 120; i++) {
+    const dots: { x: number; y: number; vx: number; vy: number; r: number; opacity: number; pulse: number; pulseSpeed: number }[] = [];
+    for (let i = 0; i < 200; i++) {
       dots.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: (Math.random() - 0.5) * 0.3,
-        r: Math.random() * 1.5 + 0.5,
-        opacity: Math.random() * 0.4 + 0.1,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        r: Math.random() * 2.5 + 0.5,
+        opacity: Math.random() * 0.6 + 0.2,
+        pulse: Math.random() * Math.PI * 2,
+        pulseSpeed: Math.random() * 0.02 + 0.005,
       });
     }
 
@@ -38,24 +40,35 @@ const HeroSection = () => {
       for (const dot of dots) {
         dot.x += dot.vx;
         dot.y += dot.vy;
+        dot.pulse += dot.pulseSpeed;
         if (dot.x < 0 || dot.x > canvas.width) dot.vx *= -1;
         if (dot.y < 0 || dot.y > canvas.height) dot.vy *= -1;
+        const pulsedOpacity = dot.opacity * (0.6 + 0.4 * Math.sin(dot.pulse));
+        const pulsedR = dot.r * (0.8 + 0.2 * Math.sin(dot.pulse));
+        // Glow
         ctx.beginPath();
-        ctx.arc(dot.x, dot.y, dot.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,255,255,${dot.opacity})`;
+        ctx.arc(dot.x, dot.y, pulsedR * 3, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(140,180,255,${pulsedOpacity * 0.08})`;
+        ctx.fill();
+        // Core
+        ctx.beginPath();
+        ctx.arc(dot.x, dot.y, pulsedR, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(200,220,255,${pulsedOpacity})`;
         ctx.fill();
       }
-      // Draw some connections
+      // Draw connections
       for (let i = 0; i < dots.length; i++) {
         for (let j = i + 1; j < dots.length; j++) {
           const dx = dots[i].x - dots[j].x;
           const dy = dots[i].y - dots[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 120) {
+          if (dist < 150) {
+            const alpha = 0.08 * (1 - dist / 150);
             ctx.beginPath();
             ctx.moveTo(dots[i].x, dots[i].y);
             ctx.lineTo(dots[j].x, dots[j].y);
-            ctx.strokeStyle = `rgba(255,255,255,${0.03 * (1 - dist / 120)})`;
+            ctx.strokeStyle = `rgba(140,180,255,${alpha})`;
+            ctx.lineWidth = 0.5;
             ctx.stroke();
           }
         }
@@ -72,8 +85,10 @@ const HeroSection = () => {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full opacity-40" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.03)_0%,transparent_70%)]" />
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full opacity-70" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(100,140,255,0.06)_0%,rgba(60,100,220,0.03)_30%,transparent_70%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(100,60,255,0.05)_0%,transparent_50%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(60,180,255,0.04)_0%,transparent_50%)]" />
 
       <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
         {/* Title */}
