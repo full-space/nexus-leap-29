@@ -85,8 +85,10 @@ const HeroSection = () => {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full opacity-40" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.03)_0%,transparent_70%)]" />
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full opacity-70" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(100,140,255,0.06)_0%,rgba(60,100,220,0.03)_30%,transparent_70%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(100,60,255,0.05)_0%,transparent_50%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(60,180,255,0.04)_0%,transparent_50%)]" />
 
       <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
         {/* Title */}
