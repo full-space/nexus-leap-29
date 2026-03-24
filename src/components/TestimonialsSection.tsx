@@ -35,7 +35,7 @@ const TestimonialCard = ({ name, role, text }: (typeof testimonials)[0]) => (
   <div className="spotlight-card rounded-2xl p-6 mx-3 min-w-[320px] max-w-[380px] flex-shrink-0">
     <p className="text-sm text-muted-foreground leading-relaxed mb-5">"{text}"</p>
     <div>
-      <p className="text-sm font-exo font-semibold text-foreground">{name}</p>
+      <p className="text-sm font-display font-semibold text-foreground">{name}</p>
       <p className="text-xs text-muted-foreground">{role}</p>
     </div>
   </div>
@@ -49,10 +49,10 @@ const TestimonialsSection = () => {
     <section className="py-32 overflow-hidden" id="depoimentos">
       <div className="max-w-7xl mx-auto px-6 mb-16">
         <div className="text-center">
-          <span className="text-xs font-exo font-medium tracking-[0.2em] uppercase text-muted-foreground mb-4 block">
+          <span className="text-xs font-display font-medium tracking-[0.2em] uppercase text-muted-foreground mb-4 block">
             Depoimentos
           </span>
-          <h2 className="text-4xl md:text-5xl font-exo font-bold tracking-tight">
+          <h2 className="text-4xl md:text-5xl font-display font-bold tracking-tight">
             Confiança de quem{" "}
             <span className="font-serif-display italic font-normal text-muted-foreground">
               escala

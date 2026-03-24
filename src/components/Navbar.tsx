@@ -15,7 +15,7 @@ const Navbar = () => {
   return (
     <nav className="fixed top-4 left-4 right-4 z-50">
       <div className="max-w-7xl mx-auto glass-panel rounded-2xl px-6 flex items-center justify-between h-14">
-        <a href="#" className="font-exo font-bold text-sm tracking-tight text-foreground">
+        <a href="#" className="font-display font-bold text-sm tracking-tight text-foreground">
           INTERNETTOOLS.
         </a>
 

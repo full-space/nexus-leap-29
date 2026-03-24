@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 const CTASection = () => (
   <section className="py-32 px-6" id="cta">
     <div className="max-w-3xl mx-auto text-center">
-      <h2 className="text-4xl md:text-5xl lg:text-6xl font-exo font-bold tracking-tight mb-6">
+      <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight mb-6">
         Pronto para{" "}
         <span className="font-serif-display italic font-normal text-muted-foreground">
           escalar?

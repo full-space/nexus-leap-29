@@ -28,10 +28,10 @@ const UseCasesSection = () => (
   <section className="py-32 px-6" id="solucoes">
     <div className="max-w-7xl mx-auto">
       <div className="max-w-2xl mb-16">
-        <span className="text-xs font-exo font-medium tracking-[0.2em] uppercase text-muted-foreground mb-4 block">
+        <span className="text-xs font-display font-medium tracking-[0.2em] uppercase text-muted-foreground mb-4 block">
           Casos de Uso
         </span>
-        <h2 className="text-4xl md:text-5xl font-exo font-bold tracking-tight mb-6">
+        <h2 className="text-4xl md:text-5xl font-display font-bold tracking-tight mb-6">
           Construído para{" "}
           <span className="font-serif-display italic font-normal text-muted-foreground">
             Escalar
@@ -55,9 +55,9 @@ const UseCasesSection = () => (
               <ArrowUpRight className="h-4 w-4 text-muted-foreground/40 group-hover:text-foreground transition-colors" />
             </div>
             <div className="mb-6">
-              <span className="text-2xl font-exo font-bold text-foreground">{uc.metric}</span>
+              <span className="text-2xl font-display font-bold text-foreground">{uc.metric}</span>
             </div>
-            <h3 className="text-lg font-exo font-semibold mb-3">{uc.title}</h3>
+            <h3 className="text-lg font-display font-semibold mb-3">{uc.title}</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">{uc.description}</p>
           </div>
         ))}

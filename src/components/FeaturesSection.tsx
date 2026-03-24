@@ -79,10 +79,10 @@ const FeaturesSection = () => (
     <div className="max-w-7xl mx-auto">
       {/* Header */}
       <div className="max-w-2xl mb-20">
-        <span className="text-xs font-exo font-medium tracking-[0.2em] uppercase text-muted-foreground mb-4 block">
+        <span className="text-xs font-display font-medium tracking-[0.2em] uppercase text-muted-foreground mb-4 block">
           Plataforma
         </span>
-        <h2 className="text-4xl md:text-5xl font-exo font-bold tracking-tight mb-6">
+        <h2 className="text-4xl md:text-5xl font-display font-bold tracking-tight mb-6">
           Capacidades{" "}
           <span className="font-serif-display italic font-normal text-muted-foreground">
             Poderosas
@@ -100,7 +100,7 @@ const FeaturesSection = () => (
           .map((f) => (
             <SpotlightCard key={f.title} className="lg:col-span-1">
               <div className="flex items-center justify-between mb-6">
-                <span className="text-xs font-exo tracking-[0.15em] uppercase text-muted-foreground">
+                <span className="text-xs font-display tracking-[0.15em] uppercase text-muted-foreground">
                   {f.tags?.[0]}
                 </span>
                 <div className="flex items-center gap-1">
@@ -113,7 +113,7 @@ const FeaturesSection = () => (
                 <f.icon className="h-10 w-10 text-muted-foreground/40" />
               </div>
 
-              <h3 className="text-xl font-exo font-semibold mb-3">{f.title}</h3>
+              <h3 className="text-xl font-display font-semibold mb-3">{f.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed mb-5">{f.description}</p>
 
               {f.tags && (
@@ -142,7 +142,7 @@ const FeaturesSection = () => (
                     <f.icon className="h-5 w-5 text-muted-foreground/60" />
                   </div>
                   <div>
-                    <h3 className="font-exo font-semibold mb-1">{f.title}</h3>
+                    <h3 className="font-display font-semibold mb-1">{f.title}</h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">{f.description}</p>
                   </div>
                 </div>
