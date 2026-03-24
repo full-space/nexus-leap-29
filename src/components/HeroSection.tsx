@@ -90,7 +90,7 @@ const HeroSection = () => {
             <span className="text-[clamp(2.5rem,8vw,7rem)] font-serif-display italic tracking-tight leading-none text-muted-foreground">
               for
             </span>
-            <span className="text-[clamp(2.5rem,8vw,7rem)] font-exo font-bold tracking-tight leading-none">
+            <span className="text-[clamp(2.5rem,8vw,7rem)] font-exo font-bold tracking-tight leading-none whitespace-nowrap">
               MODERN TEAMS
             </span>
           </div>
