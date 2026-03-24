@@ -1,6 +1,22 @@
 import { useRef, useEffect } from "react";
 
-// Datacenter positions (normalized 0-1) spread across canvas like a global network
+// Simplified continent outlines (normalized 0-1 coordinates)
+const CONTINENTS: { points: [number, number][]; }[] = [
+  // North America
+  { points: [[0.05,0.18],[0.08,0.14],[0.12,0.12],[0.16,0.10],[0.19,0.12],[0.22,0.14],[0.24,0.18],[0.23,0.22],[0.21,0.26],[0.22,0.30],[0.24,0.34],[0.22,0.36],[0.19,0.38],[0.17,0.42],[0.14,0.44],[0.12,0.42],[0.10,0.38],[0.08,0.34],[0.06,0.30],[0.05,0.26],[0.04,0.22]] },
+  // South America
+  { points: [[0.18,0.46],[0.20,0.44],[0.23,0.46],[0.26,0.50],[0.28,0.54],[0.29,0.58],[0.28,0.64],[0.27,0.70],[0.25,0.76],[0.23,0.80],[0.21,0.82],[0.19,0.78],[0.18,0.74],[0.17,0.68],[0.16,0.62],[0.16,0.56],[0.17,0.50]] },
+  // Europe
+  { points: [[0.42,0.12],[0.44,0.10],[0.47,0.09],[0.50,0.10],[0.53,0.12],[0.55,0.14],[0.54,0.18],[0.52,0.22],[0.50,0.26],[0.48,0.28],[0.45,0.26],[0.43,0.24],[0.42,0.20],[0.41,0.16]] },
+  // Africa
+  { points: [[0.42,0.30],[0.44,0.28],[0.47,0.30],[0.50,0.32],[0.52,0.36],[0.54,0.42],[0.55,0.48],[0.54,0.54],[0.52,0.60],[0.50,0.66],[0.48,0.70],[0.46,0.72],[0.44,0.70],[0.42,0.66],[0.40,0.60],[0.38,0.54],[0.37,0.48],[0.38,0.42],[0.39,0.36],[0.41,0.32]] },
+  // Asia
+  { points: [[0.55,0.10],[0.58,0.08],[0.62,0.07],[0.66,0.08],[0.70,0.10],[0.74,0.12],[0.78,0.10],[0.82,0.12],[0.85,0.14],[0.88,0.16],[0.86,0.20],[0.84,0.24],[0.80,0.28],[0.76,0.30],[0.72,0.32],[0.68,0.34],[0.64,0.36],[0.60,0.34],[0.58,0.30],[0.56,0.26],[0.55,0.22],[0.54,0.18],[0.55,0.14]] },
+  // Australia
+  { points: [[0.82,0.54],[0.84,0.52],[0.87,0.50],[0.90,0.52],[0.92,0.55],[0.93,0.58],[0.92,0.62],[0.90,0.65],[0.87,0.66],[0.84,0.65],[0.82,0.62],[0.81,0.58]] },
+];
+
+// Datacenter positions
 interface DC { x: number; y: number; size: number; label: string }
 const DATACENTERS: DC[] = [
   { x: 0.08, y: 0.30, label: "LAX", size: 4 },
@@ -21,22 +37,19 @@ const DATACENTERS: DC[] = [
   { x: 0.88, y: 0.55, label: "SYD", size: 4 },
   { x: 0.35, y: 0.15, label: "ICN", size: 3 },
   { x: 0.58, y: 0.45, label: "DXB", size: 3.5 },
-  // South America - new nodes
-  { x: 0.24, y: 0.62, label: "SPO", size: 4 },    // São Paulo
-  { x: 0.22, y: 0.72, label: "POA", size: 3.5 },   // Rio Grande do Sul
-  { x: 0.23, y: 0.57, label: "UDI", size: 3 },     // Uberlândia - MG
-  { x: 0.18, y: 0.73, label: "SCL", size: 3.5 },   // Chile (Santiago)
-  { x: 0.17, y: 0.55, label: "BOG", size: 3.5 },   // Bogotá
+  { x: 0.24, y: 0.62, label: "SPO", size: 4 },
+  { x: 0.22, y: 0.72, label: "POA", size: 3.5 },
+  { x: 0.23, y: 0.57, label: "UDI", size: 3 },
+  { x: 0.18, y: 0.73, label: "SCL", size: 3.5 },
+  { x: 0.17, y: 0.55, label: "BOG", size: 3.5 },
 ];
 
-// Connections
 const CONNECTIONS: [number, number][] = [
   [0,1],[0,2],[0,4],[1,3],[2,3],[2,4],[2,6],[4,5],
   [5,9],[6,7],[6,8],[7,8],[7,10],[8,9],[9,17],
   [10,7],[11,12],[11,17],[12,13],[13,14],[14,15],
   [12,15],[0,14],[2,7],[5,6],[6,11],[3,16],[16,7],
   [13,12],[17,9],[17,12],
-  // New SA connections
   [5,18],[18,19],[18,20],[18,22],[19,21],[22,4],[20,5],[21,19],
 ];
 
@@ -48,9 +61,44 @@ interface Beam {
   hue: number;
 }
 
-// Quadratic bezier helper
 const qBez = (a: number, cp: number, b: number, t: number) =>
   (1 - t) * (1 - t) * a + 2 * (1 - t) * t * cp + t * t * b;
+
+const drawContinents = (ctx: CanvasRenderingContext2D, W: number, H: number) => {
+  for (const continent of CONTINENTS) {
+    const pts = continent.points;
+    if (pts.length < 3) continue;
+
+    // Filled shape — very subtle
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0] * W, pts[0][1] * H);
+    for (let i = 1; i < pts.length; i++) {
+      const prev = pts[i - 1];
+      const curr = pts[i];
+      const cpx = (prev[0] + curr[0]) / 2 * W;
+      const cpy = (prev[1] + curr[1]) / 2 * H;
+      ctx.quadraticCurveTo(prev[0] * W, prev[1] * H, cpx, cpy);
+    }
+    ctx.closePath();
+    ctx.fillStyle = "rgba(255,140,30,0.03)";
+    ctx.fill();
+
+    // Orange outline
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0] * W, pts[0][1] * H);
+    for (let i = 1; i < pts.length; i++) {
+      const prev = pts[i - 1];
+      const curr = pts[i];
+      const cpx = (prev[0] + curr[0]) / 2 * W;
+      const cpy = (prev[1] + curr[1]) / 2 * H;
+      ctx.quadraticCurveTo(prev[0] * W, prev[1] * H, cpx, cpy);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = "rgba(255,140,30,0.12)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+};
 
 const HeroBackground = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -73,7 +121,6 @@ const HeroBackground = () => {
     let frame = 0;
     const pulses = DATACENTERS.map(() => Math.random() * Math.PI * 2);
 
-    // Scattered subtle particles
     const particles = Array.from({ length: 80 }, () => ({
       x: Math.random(),
       y: Math.random(),
@@ -89,6 +136,9 @@ const HeroBackground = () => {
       ctx.clearRect(0, 0, W, H);
       frame++;
 
+      // Draw continent outlines first (background layer)
+      drawContinents(ctx, W, H);
+
       // Spawn beams
       if (frame % 18 === 0 && beams.length < 15) {
         beams.push({
@@ -100,7 +150,7 @@ const HeroBackground = () => {
         });
       }
 
-      // --- Ambient particles ---
+      // Ambient particles
       for (const p of particles) {
         p.x += p.vx;
         p.y += p.vy;
@@ -114,7 +164,7 @@ const HeroBackground = () => {
         ctx.fill();
       }
 
-      // --- Draw connections ---
+      // Connections
       for (let ci = 0; ci < CONNECTIONS.length; ci++) {
         const [aI, bI] = CONNECTIONS[ci];
         const a = DATACENTERS[aI], b = DATACENTERS[bI];
@@ -122,7 +172,6 @@ const HeroBackground = () => {
         const bx = b.x * W, by = b.y * H;
         const cpx = (ax + bx) / 2;
         const cpy = (ay + by) / 2 - Math.abs(bx - ax) * 0.12;
-
         ctx.beginPath();
         ctx.moveTo(ax, ay);
         ctx.quadraticCurveTo(cpx, cpy, bx, by);
@@ -131,26 +180,22 @@ const HeroBackground = () => {
         ctx.stroke();
       }
 
-      // --- Draw beams ---
+      // Beams
       for (let i = beams.length - 1; i >= 0; i--) {
         const beam = beams[i];
         beam.progress += beam.speed;
         if (beam.progress >= 1) { beams.splice(i, 1); continue; }
-
         const [aI, bI] = CONNECTIONS[beam.connIdx];
         const from = beam.forward ? DATACENTERS[aI] : DATACENTERS[bI];
         const to = beam.forward ? DATACENTERS[bI] : DATACENTERS[aI];
-
         const ax = from.x * W, ay = from.y * H;
         const bx = to.x * W, by = to.y * H;
         const cpx = (ax + bx) / 2;
         const cpy = (ay + by) / 2 - Math.abs(bx - ax) * 0.12;
-
         const t = beam.progress;
         const px = qBez(ax, cpx, bx, t);
         const py = qBez(ay, cpy, by, t);
 
-        // Trail (multiple points for smooth curve segment)
         const trailSteps = 6;
         const trailLen = 0.10;
         ctx.beginPath();
@@ -158,8 +203,7 @@ const HeroBackground = () => {
           const st = Math.max(0, t - trailLen + (trailLen / trailSteps) * s);
           const sx = qBez(ax, cpx, bx, st);
           const sy = qBez(ay, cpy, by, st);
-          if (s === 0) ctx.moveTo(sx, sy);
-          else ctx.lineTo(sx, sy);
+          if (s === 0) ctx.moveTo(sx, sy); else ctx.lineTo(sx, sy);
         }
         const grad = ctx.createLinearGradient(
           qBez(ax, cpx, bx, Math.max(0, t - trailLen)),
@@ -172,20 +216,18 @@ const HeroBackground = () => {
         ctx.lineWidth = 1.5;
         ctx.stroke();
 
-        // Head
         ctx.beginPath();
         ctx.arc(px, py, 2.5, 0, Math.PI * 2);
         ctx.fillStyle = `hsla(${beam.hue},70%,70%,0.7)`;
         ctx.fill();
 
-        // Soft glow
         ctx.beginPath();
         ctx.arc(px, py, 8, 0, Math.PI * 2);
         ctx.fillStyle = `hsla(${beam.hue},60%,60%,0.06)`;
         ctx.fill();
       }
 
-      // --- Draw datacenter nodes ---
+      // Datacenter nodes
       for (let i = 0; i < DATACENTERS.length; i++) {
         const dc = DATACENTERS[i];
         pulses[i] += 0.018;
@@ -194,32 +236,27 @@ const HeroBackground = () => {
         const p = 0.7 + 0.3 * Math.sin(pulses[i]);
         const sz = dc.size * p;
 
-        // Outer glow
         ctx.beginPath();
         ctx.arc(px, py, sz * 3.5, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(50,120,200,${0.025 * p})`;
         ctx.fill();
 
-        // Orange border ring
         ctx.beginPath();
         ctx.arc(px, py, sz * 1.8, 0, Math.PI * 2);
         ctx.strokeStyle = `rgba(255,140,30,${0.25 * p})`;
         ctx.lineWidth = 0.8;
         ctx.stroke();
 
-        // Core
         ctx.beginPath();
         ctx.arc(px, py, sz, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(80,150,230,${0.45 * p})`;
         ctx.fill();
 
-        // Bright center
         ctx.beginPath();
         ctx.arc(px, py, sz * 0.35, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(150,200,255,${0.7 * p})`;
         ctx.fill();
 
-        // Label
         ctx.fillStyle = `rgba(120,170,220,${0.2 * p})`;
         ctx.font = "8px Inter, sans-serif";
         ctx.textAlign = "center";
