@@ -108,7 +108,24 @@ const HeroSection = () => {
       });
     }
 
+    // Data traffic dots — small orange dots traveling along links
+    const trafficDots: { linkIdx: number; t: number; speed: number; dir: number }[] = [];
+    for (let i = 0; i < 40; i++) {
+      trafficDots.push({
+        linkIdx: Math.floor(Math.random() * links.length),
+        t: Math.random(),
+        speed: 0.001 + Math.random() * 0.003,
+        dir: Math.random() > 0.5 ? 1 : -1,
+      });
+    }
+
     let pulse = 0;
+
+    // Quadratic bezier point helper
+    const getQuadPoint = (p0x: number, p0y: number, cpx: number, cpy: number, p1x: number, p1y: number, t: number) => ({
+      x: (1 - t) * (1 - t) * p0x + 2 * (1 - t) * t * cpx + t * t * p1x,
+      y: (1 - t) * (1 - t) * p0y + 2 * (1 - t) * t * cpy + t * t * p1y,
+    });
 
     const draw = () => {
       ctx.clearRect(0, 0, w, h);
@@ -124,6 +141,7 @@ const HeroSection = () => {
         ctx.fillStyle = `rgba(255,255,255,${p.o})`;
         ctx.fill();
       }
+
 
       const getPos = (idx: number) => ({
         x: datacenters[idx].nx * w,
@@ -141,6 +159,28 @@ const HeroSection = () => {
         ctx.strokeStyle = `rgba(52,211,153,${0.12 + Math.sin(pulse + a + b) * 0.04})`;
         ctx.lineWidth = 1;
         ctx.stroke();
+      }
+
+      // Draw traffic dots
+      for (const dot of trafficDots) {
+        const [a, b] = links[dot.linkIdx];
+        const pa = getPos(a), pb = getPos(b);
+        const mx = (pa.x + pb.x) / 2;
+        const my = (pa.y + pb.y) / 2 - Math.abs(pa.x - pb.x) * 0.18;
+        const t = dot.dir === 1 ? dot.t : 1 - dot.t;
+        const pos = getQuadPoint(pa.x, pa.y, mx, my, pb.x, pb.y, t);
+
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(251,146,60,0.7)";
+        ctx.fill();
+
+        dot.t += dot.speed;
+        if (dot.t > 1) {
+          dot.t = 0;
+          dot.linkIdx = Math.floor(Math.random() * links.length);
+          dot.dir = Math.random() > 0.5 ? 1 : -1;
+        }
       }
 
       // Draw DC nodes
