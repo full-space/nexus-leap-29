@@ -108,7 +108,24 @@ const HeroSection = () => {
       });
     }
 
+    // Data traffic dots — small orange dots traveling along links
+    const trafficDots: { linkIdx: number; t: number; speed: number; dir: number }[] = [];
+    for (let i = 0; i < 40; i++) {
+      trafficDots.push({
+        linkIdx: Math.floor(Math.random() * links.length),
+        t: Math.random(),
+        speed: 0.001 + Math.random() * 0.003,
+        dir: Math.random() > 0.5 ? 1 : -1,
+      });
+    }
+
     let pulse = 0;
+
+    // Quadratic bezier point helper
+    const getQuadPoint = (p0x: number, p0y: number, cpx: number, cpy: number, p1x: number, p1y: number, t: number) => ({
+      x: (1 - t) * (1 - t) * p0x + 2 * (1 - t) * t * cpx + t * t * p1x,
+      y: (1 - t) * (1 - t) * p0y + 2 * (1 - t) * t * cpy + t * t * p1y,
+    });
 
     const draw = () => {
       ctx.clearRect(0, 0, w, h);
