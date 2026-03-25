@@ -94,18 +94,6 @@ const HeroSection = () => {
       [25, 30], [22, 33],
     ];
 
-    // Light beams traveling along routes
-    interface Beam { link: number; t: number; speed: number; forward: boolean }
-    const beams: Beam[] = [];
-    for (let i = 0; i < 18; i++) {
-      beams.push({
-        link: Math.floor(Math.random() * links.length),
-        t: Math.random(),
-        speed: 0.002 + Math.random() * 0.004,
-        forward: Math.random() > 0.5,
-      });
-    }
-
     // Background particles
     const particles: { x: number; y: number; vx: number; vy: number; r: number; o: number }[] = [];
     for (let i = 0; i < 60; i++) {
@@ -138,46 +126,17 @@ const HeroSection = () => {
         y: datacenters[idx].ny * h,
       });
 
-      // Draw links (curved)
+      // Draw arced links
       for (const [a, b] of links) {
         const pa = getPos(a), pb = getPos(b);
         const mx = (pa.x + pb.x) / 2;
-        const my = (pa.y + pb.y) / 2 - Math.abs(pa.x - pb.x) * 0.15;
+        const my = (pa.y + pb.y) / 2 - Math.abs(pa.x - pb.x) * 0.18;
         ctx.beginPath();
         ctx.moveTo(pa.x, pa.y);
         ctx.quadraticCurveTo(mx, my, pb.x, pb.y);
-        ctx.strokeStyle = "rgba(255,255,255,0.06)";
+        ctx.strokeStyle = `rgba(52,211,153,${0.12 + Math.sin(pulse + a + b) * 0.04})`;
         ctx.lineWidth = 1;
         ctx.stroke();
-      }
-
-      // Draw beams
-      for (const beam of beams) {
-        beam.t += beam.speed;
-        if (beam.t > 1) {
-          beam.t = 0;
-          beam.link = Math.floor(Math.random() * links.length);
-          beam.forward = Math.random() > 0.5;
-        }
-        const [a, b] = links[beam.link];
-        const pa = getPos(beam.forward ? a : b);
-        const pb = getPos(beam.forward ? b : a);
-        const mx = (pa.x + pb.x) / 2;
-        const my = (pa.y + pb.y) / 2 - Math.abs(pa.x - pb.x) * 0.15;
-        const t = beam.t;
-        const x = (1 - t) * (1 - t) * pa.x + 2 * (1 - t) * t * mx + t * t * pb.x;
-        const y = (1 - t) * (1 - t) * pa.y + 2 * (1 - t) * t * my + t * t * pb.y;
-        const glow = ctx.createRadialGradient(x, y, 0, x, y, 12);
-        glow.addColorStop(0, "rgba(255,255,255,0.5)");
-        glow.addColorStop(1, "rgba(255,255,255,0)");
-        ctx.beginPath();
-        ctx.arc(x, y, 12, 0, Math.PI * 2);
-        ctx.fillStyle = glow;
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(x, y, 2, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(255,255,255,0.9)";
-        ctx.fill();
       }
 
       // Draw DC nodes
