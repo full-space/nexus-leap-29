@@ -21,9 +21,9 @@ const Footer = () => {
       <small className="block mt-1 text-muted-foreground/70">
         Av. Paulista, 171, 4º andar – Bela Vista – São Paulo – SP – 01311-904
       </small>
-      <p className="mt-2 text-[14px] font-semibold text-foreground/80">
+      <small className="block mt-1 text-muted-foreground/70">
         CNPJ 23.360.326/0001-25
-      </p>
+      </small>
     </footer>
   );
 };
