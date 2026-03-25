@@ -142,27 +142,6 @@ const HeroSection = () => {
         ctx.fill();
       }
 
-      // Draw traffic dots
-      for (const dot of trafficDots) {
-        const [a, b] = links[dot.linkIdx];
-        const pa = getPos(a), pb = getPos(b);
-        const mx = (pa.x + pb.x) / 2;
-        const my = (pa.y + pb.y) / 2 - Math.abs(pa.x - pb.x) * 0.18;
-        const t = dot.dir === 1 ? dot.t : 1 - dot.t;
-        const pos = getQuadPoint(pa.x, pa.y, mx, my, pb.x, pb.y, t);
-
-        ctx.beginPath();
-        ctx.arc(pos.x, pos.y, 1.5, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(251,146,60,0.7)";
-        ctx.fill();
-
-        dot.t += dot.speed;
-        if (dot.t > 1) {
-          dot.t = 0;
-          dot.linkIdx = Math.floor(Math.random() * links.length);
-          dot.dir = Math.random() > 0.5 ? 1 : -1;
-        }
-      }
 
       const getPos = (idx: number) => ({
         x: datacenters[idx].nx * w,
