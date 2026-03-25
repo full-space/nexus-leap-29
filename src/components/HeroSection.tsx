@@ -23,15 +23,11 @@ const HeroSection = () => {
 
     // Datacenter nodes — normalized [0-1] positions (rough world-map projection)
     const datacenters = [
+      // Americas
       { code: "GRU", label: "São Paulo",       nx: 0.33, ny: 0.72 },
       { code: "JPA", label: "João Pessoa",     nx: 0.38, ny: 0.62 },
       { code: "LIM", label: "Lima",            nx: 0.24, ny: 0.65 },
       { code: "IAD", label: "Virginia",        nx: 0.28, ny: 0.38 },
-      { code: "LHR", label: "Londres",         nx: 0.48, ny: 0.28 },
-      { code: "FRA", label: "Frankfurt",       nx: 0.52, ny: 0.30 },
-      { code: "NRT", label: "Tóquio",          nx: 0.85, ny: 0.38 },
-      { code: "SIN", label: "Singapura",       nx: 0.78, ny: 0.60 },
-      { code: "SYD", label: "Sydney",          nx: 0.88, ny: 0.78 },
       { code: "POA", label: "Porto Alegre",    nx: 0.34, ny: 0.78 },
       { code: "BSB", label: "Brasília",        nx: 0.36, ny: 0.68 },
       { code: "EZE", label: "Buenos Aires",    nx: 0.30, ny: 0.82 },
@@ -42,20 +38,60 @@ const HeroSection = () => {
       { code: "DFW", label: "Texas",           nx: 0.22, ny: 0.42 },
       { code: "MIA", label: "Miami",           nx: 0.26, ny: 0.46 },
       { code: "YYZ", label: "Canadá",          nx: 0.26, ny: 0.32 },
+      // Europa
+      { code: "LHR", label: "Londres",         nx: 0.48, ny: 0.28 },
+      { code: "FRA", label: "Frankfurt",       nx: 0.52, ny: 0.30 },
+      { code: "CDG", label: "Paris",           nx: 0.50, ny: 0.30 },
+      { code: "AMS", label: "Amsterdã",        nx: 0.50, ny: 0.26 },
+      { code: "MAD", label: "Madrid",          nx: 0.47, ny: 0.36 },
+      { code: "MXP", label: "Milão",           nx: 0.53, ny: 0.33 },
+      { code: "WAW", label: "Varsóvia",        nx: 0.55, ny: 0.27 },
+      { code: "ARN", label: "Estocolmo",       nx: 0.54, ny: 0.20 },
+      // África
+      { code: "JNB", label: "Joanesburgo",     nx: 0.56, ny: 0.78 },
+      { code: "CPT", label: "Cidade do Cabo",  nx: 0.53, ny: 0.84 },
+      { code: "LOS", label: "Lagos",           nx: 0.49, ny: 0.58 },
+      { code: "NBO", label: "Nairóbi",         nx: 0.60, ny: 0.62 },
+      { code: "CAI", label: "Cairo",           nx: 0.58, ny: 0.42 },
+      // Oriente Médio
+      { code: "DXB", label: "Dubai",           nx: 0.65, ny: 0.46 },
+      { code: "BAH", label: "Bahrein",         nx: 0.64, ny: 0.44 },
+      { code: "TLV", label: "Tel Aviv",        nx: 0.59, ny: 0.40 },
+      // Ásia & Oceania
+      { code: "BOM", label: "Mumbai",          nx: 0.70, ny: 0.50 },
+      { code: "NRT", label: "Tóquio",          nx: 0.85, ny: 0.38 },
+      { code: "SIN", label: "Singapura",       nx: 0.78, ny: 0.60 },
+      { code: "SYD", label: "Sydney",          nx: 0.88, ny: 0.78 },
     ];
 
-    // Connections between DCs
     const links: [number, number][] = [
-      [0, 1], [0, 2], [0, 3], [1, 3], [2, 3],
-      [3, 4], [4, 5], [5, 6], [5, 7], [6, 7], [7, 8],
-      [0, 4], [3, 6],
-      // New SA connections
-      [0, 9], [0, 10], [0, 11], [9, 12], [12, 11],
-      [0, 13], [10, 1],
-      // LATAM north
-      [2, 14], [14, 15], [15, 16], [16, 17], [17, 3],
-      // North America
-      [17, 18], [18, 4], [16, 3],
+      // Brasil interno
+      [0, 1], [0, 4], [0, 5], [0, 7], [5, 1], [4, 6], [7, 5],
+      // América do Sul
+      [0, 2], [6, 8], [2, 9], [0, 6],
+      // LATAM norte
+      [9, 10], [10, 11], [11, 12], [12, 3],
+      // América do Norte
+      [3, 13], [3, 11], [12, 3],
+      // Transatlântico
+      [3, 14], [13, 14], [3, 15],
+      // Europa interna
+      [14, 16], [14, 17], [15, 16], [15, 19], [16, 18], [17, 21],
+      [18, 19], [19, 20], [20, 15], [21, 20],
+      // Europa → África
+      [18, 24], [14, 24], [18, 28],
+      // África interna
+      [24, 25], [22, 23], [22, 24], [25, 26], [24, 28],
+      // Europa → Oriente Médio
+      [19, 31], [15, 29], [28, 29], [28, 31],
+      // Oriente Médio
+      [29, 30], [30, 31],
+      // Oriente Médio → Ásia
+      [29, 32], [32, 34],
+      // Ásia interna
+      [32, 33], [33, 34], [34, 35],
+      // África → Ásia
+      [26, 32], [22, 35],
     ];
 
     // Light beams traveling along routes
