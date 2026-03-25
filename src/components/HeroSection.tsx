@@ -207,8 +207,8 @@ const HeroSection = () => {
         {/* Title */}
         <div className="mb-8">
           <div className="flex items-center justify-center gap-4 md:gap-6 mb-2">
-            <span className="text-[clamp(2.5rem,8vw,7rem)] font-display font-bold tracking-tight leading-none">
-              CLOUD
+             <span className="text-[clamp(2.5rem,8vw,7rem)] font-bold tracking-tight leading-none" style={{ fontFamily: "'Exo 2', sans-serif" }}>
+               CLOUD
             </span>
             <span className="text-[clamp(2.5rem,8vw,7rem)] font-serif-display italic tracking-tight leading-none text-muted-foreground">
               Infrastructure
@@ -218,8 +218,8 @@ const HeroSection = () => {
             <span className="text-[clamp(2.5rem,8vw,7rem)] font-serif-display italic tracking-tight leading-none text-muted-foreground">
               for
             </span>
-            <span className="text-[clamp(2.5rem,8vw,7rem)] font-display font-bold tracking-tight leading-none">
-              MODERN TEAMS
+             <span className="text-[clamp(2.5rem,8vw,7rem)] font-bold tracking-tight leading-none whitespace-nowrap" style={{ fontFamily: "'Exo 2', sans-serif" }}>
+               MODERN TEAMS
             </span>
           </div>
         </div>
